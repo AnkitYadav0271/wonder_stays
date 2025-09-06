@@ -14,6 +14,7 @@ const listingSchema = new Schema({
   },
   image: {
     type: String,
+    default:"https://unsplash.com/photos/body-of-water-near-mountain-O5rFo-cJu94",
     set: (v) =>
       v === ""
         ? "https://unsplash.com/photos/body-of-water-near-mountain-O5rFo-cJu94"
