@@ -1,35 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('templates/boilerplate') -%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <%=getListing.title%>
-    </title>
-</head>
+<body class="bg-light">
 
-<body>
-    <h3>Complete Overview of :<%= getListing.title %>
-    </h3>
-    <p>
-        <%= getListing.description %>
-    </p>
-    <p>Price:<%= getListing.price %>
-    </p>
-    <p>Location:<%= getListing.location %>
-    </p>
-    <p>Country:<%= getListing.country %>
-    </p>
-    <!--* Edit request -->
-    <a href="/listings/<%=getListing._id%>/edit">
-        <button>Edit</button>
-    </a>
+    <div class="container mt-5 mb-5 d-flex justify-content-center">
+        <div class="card shadow-sm p-4" style="width: 80%;">
+            <div class="mb-3">
+               <b> <h5>Property Details:</h5> </b>
+            </div>
+            <!-- Listing Image -->
+            <img src="<%= getListing.image %>" class="card-img-top mb-4 rounded show-img" alt="<%= getListing.title %>">
 
-    <!--* Delete Request  -->
-    <form action="/listings/<%= getListing._id %>/destroy?_method=DELETE" method="POST">
-        <button>Delete</button>
-    </form>
+            <div class="card-body">
+                <!-- Title -->
+                <h3 class="card-title fw-bold mb-3"><%= getListing.title %></h3>
+
+                <!-- Description -->
+                <p class="card-text mb-4"><%= getListing.description %></p>
+
+                <!-- Details Table -->
+                <div class="mb-3">
+                    <div class="row mb-2">
+                        <div class="col-sm-3 fw-semibold">Location:</div>
+                        <div class="col-sm-9"><%= getListing.location %></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3 fw-semibold">Country:</div>
+                        <div class="col-sm-9"><%= getListing.country %></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3 fw-semibold">Price:</div>
+                        <div class="col-sm-9 text-success fw-bold">₹<%= getListing.price %></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 mt-4 edit-btn ">
+                    <a href="/listings/<%= getListing._id %>/edit" class="btn btn-warning ">Edit</a>
+                    <form action="/listings/<%= getListing._id %>/destroy?_method=DELETE" method="POST" class="flex-fill">
+                        <button class="btn btn-danger add-btn">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
-
-</html>

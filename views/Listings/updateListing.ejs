@@ -1,20 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Listing</title>
-</head>
-<body>
-    <h3>Edit Your <%= editListing.title %></h3>
-    <form action="/listings/<%=editListing._id%>?_method=PUT" method="POST">
-        <br> <br>
-        <input type="text" name="title" id="title" value="<%= editListing.title %>"> <br><br>
-        <textarea name="description" id="description"><%= editListing.description  %></textarea> <br><br>
-        <input type="text" name="price" value="<%= editListing.price %>"> <br><br>
-        <input type="text" name="location" id="location" value="<%= editListing.location %>"> <br><br>
-        <input type="text" name="country" id="location" value="<%= editListing.country %>"><br><br>
-        <button>Confirm</button>
-    </form>
+<% layout('templates/boilerplate') -%>
+
+<body class="bg-light">
+
+    <div class="container mt-5 col-8 mb-5">
+        <h3 class="mb-4 text-center">Edit Your <%= editListing.title %></h3>
+
+        <form action="/listings/<%= editListing._id %>?_method=PUT" method="POST" class="p-4 bg-white rounded shadow-sm">
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" id="title" value="<%= editListing.title %>" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="3"><%= editListing.description %></textarea>
+            </div>
+
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="text" name="price" id="price" value="<%= editListing.price %>" class="form-control">
+                </div>
+
+                <div class="mb-3 col-md-8">
+                    <label for="country" class="form-label">Country</label>
+                    <input type="text" name="country" id="country" value="<%= editListing.country %>" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" name="location" id="location" value="<%= editListing.location %>" class="form-control">
+            </div>
+
+            <button class="btn btn-dark ">Confirm</button>
+        </form>
+    </div>
+
 </body>
-</html>
