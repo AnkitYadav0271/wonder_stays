@@ -5,14 +5,14 @@
     <div class="container mt-5 mb-5 d-flex justify-content-center">
         <div class="card shadow-sm p-4" style="width: 80%;">
             <div class="mb-3">
-               <b> <h5>Property Details:</h5> </b>
+               <h3 class="card-title fw-bold mb-3"><%= getListing.title %></h3>
             </div>
             <!-- Listing Image -->
             <img src="<%= getListing.image %>" class="card-img-top mb-4 rounded show-img" alt="<%= getListing.title %>">
 
             <div class="card-body">
                 <!-- Title -->
-                <h3 class="card-title fw-bold mb-3"><%= getListing.title %></h3>
+               
 
                 <!-- Description -->
                 <p class="card-text mb-4"><%= getListing.description %></p>

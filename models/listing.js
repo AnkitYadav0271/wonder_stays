@@ -14,7 +14,8 @@ const listingSchema = new Schema({
   },
   image: {
     type: String,
-    default:"https://unsplash.com/photos/body-of-water-near-mountain-O5rFo-cJu94",
+    default:
+      "https://unsplash.com/photos/body-of-water-near-mountain-O5rFo-cJu94",
     set: (v) =>
       v === ""
         ? "https://unsplash.com/photos/body-of-water-near-mountain-O5rFo-cJu94"
@@ -31,6 +32,10 @@ const listingSchema = new Schema({
   country: {
     type: String,
     required: true,
+  },
+  reviews: {
+    type: Schema.Types.ObjectId,
+    ref: "Review",
   },
 });
 
