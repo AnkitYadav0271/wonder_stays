@@ -1,14 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
-const ejs = require("ejs");
+
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const Review = require("./models/review.models.js");
-const { reviewSchema } = require("./schema.js");
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
 
-//*Mongo coden
+//*Mongo code
 const MONGO_URI = "mongodb://127.0.0.1:27017/wonderstays";
 async function main() {
   await mongoose.connect(MONGO_URI);
@@ -28,115 +27,9 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-//* Validation middleware is here
-const validateReview = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new error(404, errMsg);
-  } else {
-    next();
-  }
-};
-
-//* Listing route is here
-
-app.get("/listings", async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("Listings/listings.ejs", { allListings });
-});
-
-//*Show route is here
-
-app.get("/listings/:id", async (req, res) => {
-  const { id } = req.params;
-  const getListing = await Listing.findById(id).populate("reviews");
-  if (getListing) {
-    res.render("Listings/showListing.ejs", { getListing });
-  } else {
-    res.send("cant-find Listing try another one");
-  }
-});
-
-//* New Listing route is here
-
-app.get("/listing/new", (req, res) => {
-  res.render("Listings/newListing.ejs");
-});
-
-//* ADd Listing Post route
-
-app.post("/listings", async (req, res) => {
-  console.log(req.body);
-  const { title, description, price, location, country } = req.body;
-  const newListing = await Listing.insertOne({
-    title,
-    description,
-    price,
-    location,
-    country,
-  });
-  newListing
-    .save()
-    .then(() => console.log("Add Listing is successful"))
-    .catch((err) => console.log(err));
-
-  res.redirect("/listings");
-});
-
-//* Edits get route is here
-app.get("/listings/:id/edit", async (req, res) => {
-  const { id } = req.params;
-  const editListing = await Listing.findById(id);
-  if (editListing) {
-    res.render("Listings/updateListing.ejs", { editListing });
-  } else {
-    res.send("can't find listing in our db");
-  }
-});
-
-//* Update route is here
-
-app.put("/listings/:id", async (req, res) => {
-  const { id } = req.params;
-  const { title, description, price, location, country } = req.body;
-  await Listing.findByIdAndUpdate(
-    id,
-    { title, description, price, location, country },
-    { new: true }
-  );
-  res.redirect("/listings");
-});
-
-//*Delete Listing Route is here
-
-app.delete("/listings/:id/destroy", async (req, res) => {
-  const { id } = req.params;
-  const deleteListing = Listing.findById(id);
-  if (deleteListing) await Listing.findByIdAndDelete(id);
-  res.redirect("/listings");
-});
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
 
 app.listen(6969, () => {
   console.log("server is running at the port 6969");
-});
-
-//*Reviews Post Route is here
-
-app.post("/listings/:id/reviews", async (req, res) => {
-  const { id } = req.params;
-  let listing = await Listing.findById(id);
-  let newReview = new Review(req.body.review);
-  listing.reviews.push(newReview);
-  await newReview.save();
-  await listing.save();
-  res.redirect(`/listings/${listing._id}`);
-});
-
-//* Delete Review method is here
-app.delete("/listings/:id/review/:reviewId", async (req, res) => {
-  let { id, reviewId } = req.params;
-  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); //* A nice concept that everyone should learn
-  await Review.findByIdAndDelete(reviewId);
-  res.redirect(`/listings/${id}`);
 });
