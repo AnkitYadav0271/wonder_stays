@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Listing = require("../models/listing.js");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 //* Validation middleware is here
 const validateReview = (req, res, next) => {
@@ -13,11 +15,21 @@ const validateReview = (req, res, next) => {
   }
 };
 
+//* Flash Middleware is here
+
+
+
 //* Listing route is here
 
 router.get("/", async (req, res) => {
   const allListings = await Listing.find({});
   res.render("Listings/listings.ejs", { allListings });
+});
+
+//* New Listing route is here
+
+router.get("/new", (req, res) => {
+  res.render("Listings/newListing.ejs");
 });
 
 //*Show route is here
@@ -28,15 +40,11 @@ router.get("/:id", async (req, res) => {
   if (getListing) {
     res.render("Listings/showListing.ejs", { getListing });
   } else {
-    res.send("cant-find Listing try another one");
+    req.flash("error","Listing could not be find");
+    res.redirect("/listings");
   }
 });
 
-//* New Listing route is here
-
-router.get("/new", (req, res) => {
-  res.render("Listings/newListing.ejs");
-});
 
 //* ADd Listing Post route
 
@@ -50,6 +58,7 @@ router.post("/", async (req, res) => {
     location,
     country,
   });
+  req.flash("success", "new listing added successfully");
   newListing
     .save()
     .then(() => console.log("Add Listing is successful"))
@@ -65,8 +74,10 @@ router.get("/:id/edit", async (req, res) => {
   if (editListing) {
     res.render("Listings/updateListing.ejs", { editListing });
   } else {
-    res.send("can't find listing in our db");
+    req.flash("error","Listing does not exist!");
+    res.redirect("/listings");
   }
+  
 });
 
 //* Update route is here
@@ -79,6 +90,7 @@ router.put("/:id", async (req, res) => {
     { title, description, price, location, country },
     { new: true }
   );
+  req.flash("success", "Listing Edited successfully");
   res.redirect("/listings");
 });
 
@@ -88,7 +100,8 @@ router.delete("/:id/destroy", async (req, res) => {
   const { id } = req.params;
   const deleteListing = Listing.findById(id);
   if (deleteListing) await Listing.findByIdAndDelete(id);
+  req.flash("success", "Listing Deleted successfully");
   res.redirect("/listings");
 });
- 
+
 module.exports = router;
