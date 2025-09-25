@@ -1,14 +1,14 @@
 const express = require("express");
-const router = express.Router({mergeParams:true});
+const router = express.Router({ mergeParams: true });
 const Review = require("../models/review.models.js");
 const { reviewSchema } = require("../schema.js");
 
-const Listing = require("../models/listing.js");
+const Listing = require("../models/listing.model.js");
 
 //*Reviews Post Route is here
 
 router.post("/", async (req, res) => {
-    console.log("Checking the id of the:",req.params);
+  console.log("Checking the id of the:", req.params);
   const { id } = req.params;
   let listing = await Listing.findById(id);
   let newReview = new Review(req.body.review);
@@ -25,8 +25,5 @@ router.delete("/:reviewId", async (req, res) => {
   await Review.findByIdAndDelete(reviewId);
   res.redirect(`/listings/${id}`);
 });
-
-
-
 
 module.exports = router;

@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Listing = require("../models/listing.js");
+const Listing = require("../models/listing.model.js");
 const session = require("express-session");
 const flash = require("connect-flash");
+const { isLoggedIn } = require("../middleware/middleware.js");
 
 //* Validation middleware is here
 const validateReview = (req, res, next) => {
@@ -17,8 +18,6 @@ const validateReview = (req, res, next) => {
 
 //* Flash Middleware is here
 
-
-
 //* Listing route is here
 
 router.get("/", async (req, res) => {
@@ -28,25 +27,28 @@ router.get("/", async (req, res) => {
 
 //* New Listing route is here
 
-router.get("/new", (req, res) => {
-  res.render("Listings/newListing.ejs");
+router.get("/new", isLoggedIn, (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.render("Listings/newListing.ejs");
+  }
+  req.flash("error", "user must be login to create new Listing");
+  res.redirect("/login");
 });
 
 //*Show route is here
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const getListing = await Listing.findById(id).populate("reviews");
+  const getListing = await Listing.findById(id).populate("reviews").populate("user");
   if (getListing) {
     res.render("Listings/showListing.ejs", { getListing });
   } else {
-    req.flash("error","Listing could not be find");
+    req.flash("error", "Listing could not be find");
     res.redirect("/listings");
   }
 });
 
-
-//* ADd Listing Post route
+//* Add Listing Post route
 
 router.post("/", async (req, res) => {
   console.log(req.body);
@@ -58,6 +60,8 @@ router.post("/", async (req, res) => {
     location,
     country,
   });
+
+  newListing.user = req.user._id;
   req.flash("success", "new listing added successfully");
   newListing
     .save()
@@ -68,16 +72,15 @@ router.post("/", async (req, res) => {
 });
 
 //* Edits get route is here
-router.get("/:id/edit", async (req, res) => {
+router.get("/:id/edit", isLoggedIn, async (req, res) => {
   const { id } = req.params;
   const editListing = await Listing.findById(id);
   if (editListing) {
     res.render("Listings/updateListing.ejs", { editListing });
   } else {
-    req.flash("error","Listing does not exist!");
+    req.flash("error", "Listing does not exist!");
     res.redirect("/listings");
   }
-  
 });
 
 //* Update route is here
@@ -96,7 +99,7 @@ router.put("/:id", async (req, res) => {
 
 //*Delete Listing Route is here
 
-router.delete("/:id/destroy", async (req, res) => {
+router.delete("/:id/destroy", isLoggedIn, async (req, res) => {
   const { id } = req.params;
   const deleteListing = Listing.findById(id);
   if (deleteListing) await Listing.findByIdAndDelete(id);
