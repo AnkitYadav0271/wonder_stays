@@ -5,9 +5,14 @@ const path = require("path");
 const flash = require("connect-flash")
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
+const listingsRouter = require("./routes/listing.js");
+const reviewsRouter = require("./routes/review.js");
+
 const { options } = require("joi");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.model.js");
+const userRouter = require("./routes/user.routes.js");
 
 //*Mongo code
 const MONGO_URI = "mongodb://127.0.0.1:27017/wonderstays";
@@ -39,9 +44,26 @@ const sessionOptions = {
     httpOnly:true
   }
 };
-
+//*----------middleware starts ----------*//
 app.use(session(sessionOptions));
 app.use(flash())
+
+//* passport also uses session middleware so we also need session middleware with it always
+//?Initializing the passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+//!Above to middleware is important should be always in every passport project
+//* The below line is to authenticate our local users (It's middleware of passport)
+passport.use(new LocalStrategy(User.authenticate()));
+
+//* for serialization and deserialization passport middleware
+passport.serializeUser(User.serializeUser());  //serialize user does the thing that user do not have to login again and till current session
+
+passport.deserializeUser(User.deserializeUser()); // deserialize user does the thing of re login the user if current session is over
+
+
+
 
 //*Flash middleware
 app.use((req,res,next)=>{
@@ -49,8 +71,18 @@ res.locals.message = req.flash('success');
 res.locals.error = req.flash("error");
   next();
 })
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
+
+//*-------Middleware ends --------*//
+
+//*-------Routes Starts Here ---------//
+
+
+
+
+
+app.use("/listings", listingsRouter);
+app.use("/listings/:id/reviews", reviewsRouter);
+app.use("/",userRouter);
 
 app.listen(6969, () => {
   console.log("server is running at the port 6969");
