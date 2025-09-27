@@ -4,7 +4,7 @@
 
         <div class="container mt-5 col-8 mb-5">
             <h3 class="mb-4 text-center">Add Your Property to our site</h3>
-            <form method="POST" action="/listings" class="p-4 bg-white rounded shadow-sm">
+            <form method="POST" action="/listings" class="p-4 bg-white rounded shadow-sm" enctype="multipart/form-data">
 
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
@@ -23,6 +23,11 @@
                         <input type="text" name="price" id="price" placeholder="1600" class="form-control">
                     </div>
 
+                    <div class="mb-3 col-md-4">
+                        <label for="image" class="form-label">Upload Image</label>
+                        <input type="file" name="listing[image]" id="image" placeholder="" class="form-control">
+                    </div>
+
                     <div class="mb-3 col-md-8">
                         <label for="country" class="form-label">Country</label>
                         <input type="text" name="country" placeholder="India" id="country" class="form-control">
@@ -31,12 +36,13 @@
 
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
-                    <input type="text" name="location" placeholder="Kunda,Pratapgarh,Uttar Pradesh" id="location" class="form-control">
+                    <input type="text" name="location" placeholder="Kunda,Pratapgarh,Uttar Pradesh" id="location"
+                        class="form-control">
                 </div>
 
 
 
-                <button class="btn btn-dark  add-btn">Add</button>
+                <button class="btn btn-dark btn-primary  add-btn">Add</button>
             </form>
         </div>
 
